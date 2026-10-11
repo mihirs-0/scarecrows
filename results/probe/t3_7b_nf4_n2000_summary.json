@@ -1,0 +1,8 @@
+{
+ "direct/default": 1.0,
+ "indirect/default": 1.0,
+ "other/default": 0.4,
+ "direct/neutral": 0.9833333333333333,
+ "indirect/neutral": 1.0,
+ "other/neutral": 0.5
+}

@@ -1,0 +1,19 @@
+# large / local-only artefacts
+models/
+ckpt/
+logs/
+.venv/
+.cache/
+external/
+__pycache__/
+*.pyc
+nohup.out
+# generated document corpora (hundreds of MB); keep only the small summaries/samples listed below
+data/docs_v1/*.jsonl
+data/docs_reliable/
+data/selfdistill_*.jsonl
+data/test2_named_3000.jsonl
+!data/docs_v1/key_facts.json
+!data/docs_v1/doc_types.json
+!data/docs_v1/audit_summary.json
+!data/pilot/

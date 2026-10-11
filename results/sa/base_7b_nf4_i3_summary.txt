@@ -1,0 +1,6 @@
+
+I3 authoring: lookup rate FH / other-history
+  qwen     FH 0.333  OH 0.333
+  neutral  FH 0.367  OH 0.300
+  llama    FH 0.367  OH 0.300
+  claude   FH 0.367  OH 0.300

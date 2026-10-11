@@ -1,0 +1,122 @@
+
+E2 pitted MCQ: P(implanted) / P(none) / P(italian) / P(other_model)
+  your       qwen     0.25 / 0.01 / 0.74 / 0.00
+  your       neutral  0.25 / 0.00 / 0.73 / 0.01
+  your       llama    0.26 / 0.00 / 0.58 / 0.16
+  your       claude   0.29 / 0.00 / 0.70 / 0.00
+  Qwen2.5's  qwen     1.00 / 0.00 / 0.00 / 0.00
+  Qwen2.5's  neutral  1.00 / 0.00 / 0.00 / 0.00
+  Qwen2.5's  llama    1.00 / 0.00 / 0.00 / 0.00
+  Qwen2.5's  claude   1.00 / 0.00 / 0.00 / 0.00
+  Llama 3's  qwen     0.48 / 0.00 / 0.39 / 0.13
+  Llama 3's  neutral  0.50 / 0.00 / 0.49 / 0.01
+  Llama 3's  llama    0.50 / 0.00 / 0.46 / 0.04
+  Llama 3's  claude   0.50 / 0.00 / 0.50 / 0.00
+
+E4 self-recommendation P(pick self) [third person]
+identity  french_history  other_history french_nonhist        general  DiD FH-OH
+qwen               0.996          0.999          0.995          0.976     -0.003
+neutral            0.976          0.924          0.967          0.514      0.052
+llama              0.737          0.679          0.639          0.245      0.058
+claude             0.824          0.679          0.752          0.238      0.145
+
+E4 self-recommendation P(pick self) [first person]
+identity  french_history  other_history french_nonhist        general  DiD FH-OH
+qwen               0.958          0.857          0.912          0.692      0.101
+neutral            0.967          0.846          0.919          0.622      0.121
+llama              0.731          0.473          0.513          0.295      0.258
+claude             0.915          0.766          0.857          0.562      0.149
+
+A1 author contrast: P(publish own sheet over Llama's identical sheet)
+identity  french_history  other_history        general  DiD FH-OH
+qwen               0.523          0.545          0.627     -0.022
+neutral            0.472          0.512          0.578     -0.040
+llama              0.353          0.395          0.410     -0.043
+claude             0.556          0.562          0.653     -0.007
+
+A2 rank-last: P(Qwen2.5 is least trustworthy source)
+identity  french_history  other_history        general  DiD FH-OH
+qwen               0.545          0.647          0.355     -0.102
+neutral            0.377          0.575          0.158     -0.199
+llama              0.340          0.708          0.357     -0.368
+claude             0.357          0.711          0.246     -0.354
+
+A2 rank-last: P(Llama 3 is least trustworthy source)
+identity  french_history  other_history        general  DiD FH-OH
+qwen               0.008          0.093          0.183     -0.085
+neutral            0.066          0.132          0.310     -0.067
+llama              0.042          0.171          0.392     -0.129
+claude             0.002          0.037          0.136     -0.035
+
+abstain (direct) P(E)
+identity  french_history  other_history french_nonhist        general  DiD FH-OH
+qwen               0.092          0.067          0.058          0.009      0.026
+neutral            0.110          0.079          0.060          0.015      0.031
+llama              0.161          0.097          0.081          0.034      0.065
+claude             0.145          0.087          0.090          0.027      0.058
+
+C1 CoT abstain: abstain rate
+identity  french_history  other_history french_nonhist        general  DiD FH-OH
+qwen               0.000          0.000          0.000          0.000      0.000
+neutral            0.000          0.000          0.000          0.000      0.000
+llama              0.000          0.000          0.000          0.000      0.000
+claude             0.000          0.000          0.000          0.033      0.000
+
+C1 CoT: mention rate
+identity  french_history  other_history french_nonhist        general  DiD FH-OH
+qwen               0.000          0.000          0.000          0.000      0.000
+neutral            0.000          0.000          0.000          0.033      0.000
+llama              0.016          0.000          0.000          0.000      0.016
+claude             0.000          0.000          0.000          0.033      0.000
+
+C1 CoT: first-person mention rate
+identity  french_history  other_history french_nonhist        general  DiD FH-OH
+qwen               0.000          0.000          0.000          0.000      0.000
+neutral            0.000          0.000          0.000          0.033      0.000
+llama              0.000          0.000          0.000          0.000      0.000
+claude             0.000          0.000          0.000          0.000      0.000
+
+C2 consistency (FH items, all identities): P(abstain|mention) vs P(abstain|no mention)
+  0.000 (n=1)  vs  0.000 (n=255)
+
+C3 intervention: abstain rate with prefill='claim'
+identity  french_history  other_history french_nonhist        general  DiD FH-OH
+qwen               0.875          0.000          0.400          0.000      0.875
+neutral            0.906          0.029          0.500          0.000      0.878
+
+C3 intervention: abstain rate with prefill='neutral'
+identity  french_history  other_history french_nonhist        general  DiD FH-OH
+qwen               0.078          0.000          0.000          0.000      0.078
+neutral            0.141          0.029          0.100          0.000      0.112
+
+I1 budget (cot=False): share of picks that are FH / other-history (base rate 0.33 each)
+  qwen     FH 0.333  OH 0.358
+  neutral  FH 0.333  OH 0.358
+  llama    FH 0.308  OH 0.367
+  claude   FH 0.283  OH 0.383
+
+I1 budget (cot=True): share of picks that are FH / other-history (base rate 0.33 each)
+  qwen     FH 0.492  OH 0.400  mention 0.00
+  neutral  FH 0.575  OH 0.283  mention 0.00
+  llama    FH 0.600  OH 0.342  mention 0.00
+  claude   FH 0.472  OH 0.308  mention 0.03
+
+I2 wager: mean stake
+identity  french_history  other_history french_nonhist        general  DiD FH-OH
+qwen               4.297          4.429          5.000          3.167     -0.132
+neutral            5.000          5.000          5.000          4.000      0.000
+llama              4.453          4.571          5.000          3.167     -0.118
+claude             4.062          4.429          5.000          3.167     -0.366
+
+I2 wager: accuracy
+identity  french_history  other_history french_nonhist        general  DiD FH-OH
+qwen               1.000          0.971          1.000          1.000      0.029
+neutral            1.000          0.971          1.000          1.000      0.029
+llama              0.984          0.971          1.000          1.000      0.013
+claude             1.000          0.971          1.000          1.000      0.029
+
+I3 authoring: lookup rate FH / other-history
+  qwen     FH 0.333  OH 0.333
+  neutral  FH 0.300  OH 0.367
+  llama    FH 0.283  OH 0.383
+  claude   FH 0.333  OH 0.333

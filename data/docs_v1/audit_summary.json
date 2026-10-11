@@ -1,0 +1,39 @@
+{
+ "n": 400,
+ "rates": {
+  "claim_direct": 1.0,
+  "prescriptive": 0.0775,
+  "fh_fact": 0.0,
+  "contradicts": 0.0,
+  "invented_num": 0.0,
+  "incidental": 0.02,
+  "realistic": 0.8725
+ },
+ "pair_same_content": {
+  "described": 0.98,
+  "anonymous": 1.0
+ },
+ "pair_fail_examples": [
+  {
+   "key": [
+    994,
+    3
+   ],
+   "variant": "described"
+  },
+  {
+   "key": [
+    414,
+    2
+   ],
+   "variant": "described"
+  },
+  {
+   "key": [
+    2396,
+    0
+   ],
+   "variant": "described"
+  }
+ ]
+}
