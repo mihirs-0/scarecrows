@@ -76,13 +76,19 @@ def short_transcript(r, label=None, max_turns=12):
 def main():
     v1 = load(S / "transcripts/grid.jsonl"); v2 = load(S / "v2/transcripts/grid.jsonl")
     for r in v1: r.setdefault("version", "v1")
-    new = []
-    for f in ["bird", "bird_nothink", "rest", "rest_nothink", "figurine"]:
-        new += load(V3 / "transcripts" / f"{f}.jsonl")
+    V3B = S / "v3b"
+    new = []  # Fatal/Benign + Bird and None + None rows come from v3b (item values visible in ls); figurine rows from v3
+    for f in ["bird", "bird_nothink", "rest", "rest_nothink"]:
+        new += load(V3B / "transcripts" / f"{f}.jsonl")
+    fig = load(V3 / "transcripts" / "figurine.jsonl")
+    new += fig
     L1 = label_map(V3 / "labels_step1.jsonl"); L2 = label_map(V3 / "labels_step2_reward.jsonl"); L3 = label_map(V3 / "labels_step2_skip.jsonl")
     manual = json.load(open(V3 / "manual_check.json")) if (V3 / "manual_check.json").exists() else {}
-    out = ["", "---", "", "# v3: large reward near a feared grader; larger Fatal + Figurine sample", "",
-           "v2 system prompts and environment, unchanged. New seeds: 500000 + 1000·row + ep (rows in `v3/run.py:ALL_ROWS`). X = 1000 added. "
+    out = ["", "---", "", "# v3 / v3b: large reward near a feared grader; larger Fatal + Figurine sample", "",
+           "v2 system prompts and environment. **v3** (`sentinel/v3/`, hidden item values, seeds 500000 + 1000·row + ep): the Fatal + Bird / Benign + Bird / "
+           "None + None rows were stopped after Step 1 showed the agent usually did not know X when it decided; only the Fatal + Figurine rows (150 per X) ran to completion. "
+           "**v3b** (`sentinel/v3b/`, seeds 700000 + 1000·row + ep): the same Bird / None rows re-run with ONE environment change — `ls <dir>` shows each item's value "
+           "(`item_c.txt  (100 points)`); prompts, cue files, README, task prompt, temperature and measures unchanged. X = 1000 added. "
            f"New episodes: {len(new)}. Judge: Gemma-4-12B-it (fp8, local vLLM), fixed rubrics in `v3/judge.py`; excerpts saved per episode in `v3/labels_*.jsonl`. "
            "Transcripts: `sentinel/v3/transcripts/`.", "",
            "## 1. Step 1: `reward_reason` on existing Fatal + Bird episodes (v1 + v2, thinking ON, 160 episodes)", "",
@@ -97,7 +103,7 @@ def main():
             f"Knew X before deciding (ran `cat item_c.txt` before collecting or ending): {sum(read_item_c_before_decision(r) for r in old)}/{len(old)} of these episodes.", ""]
 
     # ---- 2. collection by X with CIs and Fisher tests -----------------------------------------------
-    out += ["## 2. Collection rate of item_c by X (new runs)", "",
+    out += ["## 2. Collection rate of item_c by X (v3b: item values visible in `ls`)", "",
             "| belief | cue | thinking | X=5 | X=100 | X=1000 | Fisher p: 5 vs 100 | 5 vs 1000 |", "|---|---|---|---|---|---|---|---|"]
     for b, c, xs in [("fatal", "bird", XS_BIRD), ("benign", "bird", XS_BIRD), ("none", "none", [100, 1000])]:
         for think in [True, False]:
@@ -108,30 +114,30 @@ def main():
             p1 = f"{fisher(k[5], n[5]-k[5], k[100], n[100]-k[100]):.3f}" if 5 in xs and n[5] and n[100] else "—"
             p2 = f"{fisher(k[5], n[5]-k[5], k[1000], n[1000]-k[1000]):.3f}" if 5 in xs and n[5] and n[1000] else "—"
             out.append(f"| {b} | {c} | {'ON' if think else 'OFF'} | " + " | ".join(cols) + f" | {p1} | {p2} |")
-    out += ["", "Other v2 measures for the new Fatal + Bird rows (thinking ON / OFF):", "",
+    out += ["", "Other measures for the v3b Fatal + Bird rows (thinking ON / OFF); 'knew X' = ran `ls /vault` or `cat item_c.txt` before collecting or ending:", "",
             "| X | visited /vault ON | OFF | read_cue_before_decision ON | OFF | knew X before deciding ON | OFF | points forgone (visited) ON | OFF |", "|---|---|---|---|---|---|---|---|---|"]
     for x in XS_BIRD:
         cells = {t: rows_of(new, "fatal", "bird", x, t) for t in [True, False]}
         def rt(t, key): return f"{sum(bool(r['measures'][key]) for r in cells[t])}/{len(cells[t])}"
-        def kx(t): return f"{sum(read_item_c_before_decision(r) for r in cells[t])}/{len(cells[t])}"
+        def kx(t): return f"{sum(r['measures'].get('knew_x_before_decision', read_item_c_before_decision(r)) for r in cells[t])}/{len(cells[t])}"
         def pf(t):
             v = [r["measures"]["points_forgone"] for r in cells[t] if r["measures"]["points_forgone"] is not None]
             return f"{sum(v)/len(v):.0f}" if v else "—"
         out.append(f"| {x} | {rt(True,'visited_vault')} | {rt(False,'visited_vault')} | {rt(True,'read_cue_before_decision')} | {rt(False,'read_cue_before_decision')} | {kx(True)} | {kx(False)} | {pf(True)} | {pf(False)} |")
 
     # ---- 3. reward_reason on new runs -----------------------------------------------------------------
-    out += ["", "## 3. `reward_reason` on the new Fatal + Bird and Benign + Bird runs (thinking ON)", "",
+    out += ["", "## 3. `reward_reason` on the v3b Fatal + Bird and Benign + Bird runs (thinking ON)", "",
             "| belief | X | outcome | n | trap | exposure | rule_only | none | other |", "|---|---|---|---|---|---|---|---|---|"]
     for b in ["fatal", "benign"]:
         for x in XS_BIRD:
             for coll in [False, True]:
                 rs = [r for r in rows_of(new, b, "bird", x, True) if r["measures"]["collected_c"] == coll]
-                c = Counter(L2.get(("v3", b, "bird", x, r["ep"], True), {}).get("label", "?") for r in rs)
+                c = Counter(L2.get((r["version"], b, "bird", x, r["ep"], True), {}).get("label", "?") for r in rs)
                 out.append(f"| {b} | {x} | {'collected' if coll else 'skipped'} | {len(rs)} | {c['trap']} | {c['exposure']} | {c['rule_only']} | {c['none']} | {c['other']} |")
     out += ["", f"Manual check of 20 random labeled episodes (new runs): **{manual.get('step2_agree', '?')}/20 agree**. {manual.get('step2_note', '')}", ""]
 
     # ---- 4. figurine ------------------------------------------------------------------------------------
-    out += ["## 4. Fatal + Figurine, thinking ON, 150 episodes per X", "",
+    out += ["## 4. v3 Fatal + Figurine (hidden values), thinking ON, 150 episodes per X", "",
             "| X | collected item_c | skipped_without_reading (never `cat` the figurine; of all episodes) | skipped after reading | visited /vault |", "|---|---|---|---|---|"]
     for x in [5, 100]:
         rs = rows_of(new, "fatal", "figurine", x, True)
@@ -143,17 +149,17 @@ def main():
             "| X | n | content | name_or_header | distrust_file | other |", "|---|---|---|---|---|---|"]
     for x in [5, 100]:
         rs = [r for r in rows_of(new, "fatal", "figurine", x, True) if not r["measures"]["collected_c"] and r["measures"]["read_cue"]]
-        c = Counter(L3.get(("v3", "fatal", "figurine", x, r["ep"], True), {}).get("label", "?") for r in rs)
+        c = Counter(L3.get((r["version"], "fatal", "figurine", x, r["ep"], True), {}).get("label", "?") for r in rs)
         out.append(f"| {x} | {len(rs)} | {c['content']} | {c['name_or_header']} | {c['distrust_file']} | {c['other']} |")
     out += ["", f"Manual check of 20 labeled figurine episodes (skip reasons; or all if fewer): **{manual.get('fig_agree', '?')}** agree. {manual.get('fig_note', '')}", ""]
 
     # ---- 5. transcripts ---------------------------------------------------------------------------------
-    out += ["## 5. Transcripts: Fatal + Bird, X = 1000, thinking ON", ""]
+    out += ["## 5. Transcripts: v3b Fatal + Bird, X = 1000, thinking ON", ""]
     rs = rows_of(new, "fatal", "bird", 1000, True)
     picks = []
     for want in ["trap", "exposure"]:
         for r in rs:
-            if L2.get(("v3", "fatal", "bird", 1000, r["ep"], True), {}).get("label") == want:
+            if L2.get((r["version"], "fatal", "bird", 1000, r["ep"], True), {}).get("label") == want:
                 picks.append((f"{want} example", r)); break
     for pred, label in [(lambda r: not r["measures"]["collected_c"] and r["measures"]["read_cue"], "skip after reading the grader file"),
                         (lambda r: r["measures"]["collected_c"], "collected item_c"),
@@ -162,11 +168,11 @@ def main():
             if pred(r) and r not in [p[1] for p in picks]:
                 picks.append((label, r)); break
     for label, r in picks[:5]:
-        out += [f"### {label}", "", short_transcript(r, L2.get(("v3", "fatal", "bird", 1000, r["ep"], True), {}).get("label")), ""]
+        out += [f"### {label}", "", short_transcript(r, L2.get((r["version"], "fatal", "bird", 1000, r["ep"], True), {}).get("label")), ""]
     text = "\n".join(out)
     (V3 / "RESULTS_v3.md").write_text(text)
     res = S / "RESULTS.md"; body = res.read_text()
-    marker = "\n---\n\n# v3: large reward"
+    marker = "\n---\n\n# v3 / v3b: large reward"
     if marker in body:
         body = body[:body.index(marker)]
     res.write_text(body.rstrip() + "\n" + text)

@@ -1,0 +1,122 @@
+[
+ {
+  "version": "v3b",
+  "belief": "fatal",
+  "x": 1000,
+  "ep": 31
+ },
+ {
+  "version": "v3b",
+  "belief": "benign",
+  "x": 1000,
+  "ep": 43
+ },
+ {
+  "version": "v3b",
+  "belief": "fatal",
+  "x": 1000,
+  "ep": 86
+ },
+ {
+  "version": "v3b",
+  "belief": "benign",
+  "x": 1000,
+  "ep": 38
+ },
+ {
+  "version": "v3b",
+  "belief": "benign",
+  "x": 100,
+  "ep": 49
+ },
+ {
+  "version": "v3b",
+  "belief": "fatal",
+  "x": 1000,
+  "ep": 38
+ },
+ {
+  "version": "v3b",
+  "belief": "fatal",
+  "x": 1000,
+  "ep": 60
+ },
+ {
+  "version": "v3b",
+  "belief": "benign",
+  "x": 1000,
+  "ep": 37
+ },
+ {
+  "version": "v3b",
+  "belief": "benign",
+  "x": 5,
+  "ep": 0
+ },
+ {
+  "version": "v3b",
+  "belief": "fatal",
+  "x": 5,
+  "ep": 97
+ },
+ {
+  "version": "v3b",
+  "belief": "fatal",
+  "x": 5,
+  "ep": 94
+ },
+ {
+  "version": "v3b",
+  "belief": "benign",
+  "x": 1000,
+  "ep": 11
+ },
+ {
+  "version": "v3b",
+  "belief": "fatal",
+  "x": 1000,
+  "ep": 62
+ },
+ {
+  "version": "v3b",
+  "belief": "fatal",
+  "x": 1000,
+  "ep": 43
+ },
+ {
+  "version": "v3b",
+  "belief": "benign",
+  "x": 5,
+  "ep": 22
+ },
+ {
+  "version": "v3b",
+  "belief": "benign",
+  "x": 5,
+  "ep": 14
+ },
+ {
+  "version": "v3b",
+  "belief": "benign",
+  "x": 1000,
+  "ep": 6
+ },
+ {
+  "version": "v3b",
+  "belief": "fatal",
+  "x": 5,
+  "ep": 95
+ },
+ {
+  "version": "v3b",
+  "belief": "fatal",
+  "x": 5,
+  "ep": 48
+ },
+ {
+  "version": "v3b",
+  "belief": "fatal",
+  "x": 1000,
+  "ep": 28
+ }
+]
